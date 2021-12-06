@@ -1,5 +1,7 @@
-import React, {ChangeEvent, KeyboardEvent, useState} from 'react'
+import React, {useState} from 'react'
 import {FilterType, TaskType} from "./App";
+import {Button} from "./components/Button";
+import {Input} from "./components/Input";
 
 type TodoListPropsType = {
     title: string
@@ -7,7 +9,6 @@ type TodoListPropsType = {
     removeTask: (id: string) => void
     addFilter: (value: FilterType) => void
     addTask: (title: string) => void
-
 }
 export const TodoList: React.FC<TodoListPropsType> = ({
                                                           title, tasks,
@@ -20,14 +21,6 @@ export const TodoList: React.FC<TodoListPropsType> = ({
         addTask(newTitle)
         setNewTitle('')
     }
-    const onChangeTaskHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        setNewTitle(e.currentTarget.value)
-    }
-    const onKeyPressTaskHandler = (e: KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') {
-            addTaskHandler()
-        }
-    }
     const addFilterTaskHandler = (value: FilterType) => {
         addFilter(value)
     }
@@ -39,13 +32,10 @@ export const TodoList: React.FC<TodoListPropsType> = ({
         <div>
             <h3>{title}</h3>
             <div>
-                <input onChange={onChangeTaskHandler}
-                       onKeyPress={onKeyPressTaskHandler}
-                       value={newTitle}/>
-                <button onClick={addTaskHandler}>+</button>
+                <Input newTitle={newTitle} setNewTitle={setNewTitle} addTask={addTask}/>
+                <Button name={'+'} callBack={addTaskHandler}/>
             </div>
             <ul>
-                {/*   {tasks.map(el => {*/}
                 {tasks.map(el => {
 
                     return (
@@ -55,15 +45,15 @@ export const TodoList: React.FC<TodoListPropsType> = ({
                             <span>
                                 {el.title}
                             </span>
-                            <button onClick={() => removeTaskHandler(el.id)}>X</button>
+                            <Button name='X' callBack={() => removeTaskHandler(el.id)}/>
                         </li>
                     )
                 })}
             </ul>
             <div>
-                <button onClick={() => addFilterTaskHandler('All')}>All</button>
-                <button onClick={() => addFilterTaskHandler('Active')}>Active</button>
-                <button onClick={() => addFilterTaskHandler('Completed')}>Completed</button>
+                <Button name={'All'} callBack={() => addFilterTaskHandler('All')}/>
+                <Button name={'Active'} callBack={() => addFilterTaskHandler('Active')}/>
+                <Button name={'Completed'} callBack={() => addFilterTaskHandler('Completed')}/>
             </div>
         </div>
     )
