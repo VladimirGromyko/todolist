@@ -1,29 +1,53 @@
-import React from 'react'
-import {filterType, TaskType} from "./App";
+import React, {ChangeEvent, KeyboardEvent, useState} from 'react'
+import {FilterType, TaskType} from "./App";
 
 type TodoListPropsType = {
     title: string
     tasks: Array<TaskType>
-    removeTask: (id: number) => void
-    addFilter: (value:filterType) => void
-    // filterAllTask: (tasks: Array<TaskType>) => void
-    // filterActiveTask: () => void
-    // filterCompletedTask: () => void
+    removeTask: (id: string) => void
+    addFilter: (value: FilterType) => void
+    addTask: (title: string) => void
+
 }
 export const TodoList: React.FC<TodoListPropsType> = ({
                                                           title, tasks,
-                                                          removeTask,
-                                                          addFilter
+                                                          removeTask, addFilter,
+                                                          addTask,
                                                       }) => {
+
+    const [newTitle, setNewTitle] = useState('')
+    const addTaskHandler = () => {
+        addTask(newTitle)
+        setNewTitle('')
+    }
+    const onChangeTaskHandler = (e: ChangeEvent<HTMLInputElement>) => {
+        setNewTitle(e.currentTarget.value)
+    }
+    const onKeyPressTaskHandler = (e: KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            addTaskHandler()
+        }
+    }
+    const addFilterTaskHandler = (value: FilterType) => {
+        addFilter(value)
+    }
+    const removeTaskHandler = (tId: string) => {
+        removeTask(tId)
+    }
+
     return (
         <div>
             <h3>{title}</h3>
             <div>
-                <input/>
-                <button>+</button>
+                <input onChange={onChangeTaskHandler}
+                       onKeyPress={onKeyPressTaskHandler}
+                       value={newTitle}/>
+                <button onClick={addTaskHandler}>+</button>
             </div>
             <ul>
+                {/*   {tasks.map(el => {*/}
                 {tasks.map(el => {
+
                     return (
                         <li key={el.id}>
                             <input type="checkbox"
@@ -31,17 +55,15 @@ export const TodoList: React.FC<TodoListPropsType> = ({
                             <span>
                                 {el.title}
                             </span>
-                            <button onClick={() => removeTask(el.id)}>
-                                X
-                            </button>
+                            <button onClick={() => removeTaskHandler(el.id)}>X</button>
                         </li>
                     )
                 })}
             </ul>
             <div>
-                <button onClick={() => addFilter('All')}>All</button>
-                <button onClick={() => addFilter('Active')}>Active</button>
-                <button onClick={() => addFilter('Completed')}>Completed</button>
+                <button onClick={() => addFilterTaskHandler('All')}>All</button>
+                <button onClick={() => addFilterTaskHandler('Active')}>Active</button>
+                <button onClick={() => addFilterTaskHandler('Completed')}>Completed</button>
             </div>
         </div>
     )
