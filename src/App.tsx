@@ -20,30 +20,31 @@ function App() {
         {id: v1(), title: "React", isDone: false},
         {id: v1(), title: "Python", isDone: false},
         {id: v1(), title: "С#", isDone: false}
-
     ]
 
     const [tasks, setTask] = useState(initialTask)
 
-    // const [newTask, setNewTask] = useState(initialTask)
-    // const task_2: Array<TaskType> = [
-    //     {id: 4, title: "Meat", isDone: true},
-    //     {id: 5, title: "Beer", isDone: false},
-    //     {id: 6, title: "Milk", isDone: false}
-    // ]
     const removeTask = (id: string) => {
         setTask(tasks.filter(t_el => t_el.id !== id))
-        // setNewTask(newTask.filter(t_el => t_el.id !==id))
     }
     const addTask = (title: string) => {
-        setTask([{id: v1(), title, isDone: false},...tasks])
+        if (title.trim()){
+            setTask([{id: v1(), title, isDone: false}, ...tasks])
+        }
     }
     const [filter, setFilter] = useState<FilterType>('All')
+
     const addFilter = (value: FilterType) => {
         setFilter(value)
     }
-    let newTask = tasks
+    const changeStatus = (id: string, status: boolean) => {
+        let task = tasks.map(m => {
+            return m.id === id ? {...m, isDone: status} : m
+        })
+        setTask(task)
+    }
 
+    let newTask = tasks
     if (filter === "Active") {
         newTask = tasks.filter(t_el => !t_el.isDone)
     }
@@ -51,23 +52,14 @@ function App() {
         newTask = tasks.filter(t_el => t_el.isDone)
     }
 
-    // switch (filter) {
-    //     case "Active" :
-    //         newTask = task.filter(t_el => !t_el.isDone)
-    //         break
-    //     case "Completed" :
-    //         newTask = task.filter(t_el => t_el.isDone)
-    //         break
-    //     default:
-    //         break
-    // }
-
     return (<div className="App">
             <TodoList title={todoListTitle_1}
                       tasks={newTask}
                       removeTask={removeTask}
                       addFilter={addFilter}
-                      addTask = {addTask}
+                      addTask={addTask}
+                      changeStatus={changeStatus}
+                      filter={filter}
             />
         </div>
     )
