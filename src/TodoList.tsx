@@ -6,17 +6,19 @@ import s from "./TodoList.module.css"
 
 
 type TodoListPropsType = {
+    todoListId: string
     title: string
     tasks: Array<TaskType>
-    removeTask: (id: string) => void
-    addFilter: (value: FilterType) => void
-    addTask: (title: string) => void
-    changeStatus: (id: string, status: boolean) => void
+    removeTask: (todoListId: string, id: string) => void
+    addFilter: (todoListId: string, value: FilterType) => void
+    addTask: (todoListId: string, title: string) => void
+    changeStatus: (todoListId: string, id: string, status: boolean) => void
     filter: FilterType
+    removeTodoList: (todoListId: string) => void
 }
 export const TodoList = ({
-                             title, tasks, removeTask, addFilter, addTask,
-                             changeStatus, filter, ...props
+                             todoListId, title, tasks, removeTask, addFilter,
+                             addTask, changeStatus, filter, removeTodoList, ...props
                          }: TodoListPropsType) => {
 
     const [newTitle, setNewTitle] = useState('')
@@ -25,31 +27,41 @@ export const TodoList = ({
     const addTaskHandler = () => {
         let trimNewTitle = newTitle.trim()
         if (trimNewTitle && trimNewTitle.length < 15) {
-            addTask(trimNewTitle)
+            addTask(todoListId, trimNewTitle)
             setNewTitle('')
-            setError(false)
+            setError('Title is required')
         } else if (trimNewTitle.length > 15) {
         } else {
             setError('Title is required')
             setNewTitle('')
         }
     }
-    const addFilterTaskHandler = (value: FilterType) => {
-        addFilter(value)
+    const addFilterTaskHandler = (todoListId: string, value: FilterType) => {
+        addFilter(todoListId, value)
     }
-    const removeTaskHandler = (tId: string) => {
-        removeTask(tId)
+    const removeTaskHandler = (todoListId: string, tId: string) => {
+        removeTask(todoListId, tId)
     }
     const onChangeCheckboxHandler = (elId: string, e: ChangeEvent<HTMLInputElement>) => {
-        changeStatus(elId, e.currentTarget.checked)
+        changeStatus(todoListId, elId, e.currentTarget.checked)
+    }
+    const removeTodoListHandler = (todoListId: string) => {
+        removeTodoList(todoListId)
     }
 
     return (
         <div>
-            <h3>{title}</h3>
+            <h3>{title}
+                <button onClick={() => removeTodoListHandler(todoListId)}>X</button>
+            </h3>
             <div>
-                <Input newTitle={newTitle} setNewTitle={setNewTitle} addTask={addTask} setError={setError}
-                       error={error}/>
+                <Input
+                    todoListId={todoListId}
+                    newTitle={newTitle}
+                    setNewTitle={setNewTitle}
+                    addTask={addTask}
+                    setError={setError}
+                    error={error}/>
                 {/*<Button name={'+'} callBack={addTaskHandler}/>*/}
                 <button onClick={addTaskHandler}>+</button>
                 {error && <div className={s.errorMessage}>{error}</div>}
@@ -65,16 +77,17 @@ export const TodoList = ({
                             <span className={el.isDone ? s.isDone : ''}>
                                 {el.title}
                             </span>
-                            <button onClick={() => removeTaskHandler(el.id)}>X</button>
+                            <button onClick={() => removeTaskHandler(todoListId, el.id)}>X</button>
                             {/*  <Button name='X' callBack={() => removeTaskHandler(el.id)}/>*/}
                         </li>
                     )
                 })}
             </ul>
             <div>
-                <Button name={'All'} filter={filter} callBack={() => addFilterTaskHandler('All')}/>
-                <Button name={'Active'} filter={filter} callBack={() => addFilterTaskHandler('Active')}/>
-                <Button name={'Completed'} filter={filter} callBack={() => addFilterTaskHandler('Completed')}/>
+                <Button name={'All'} filter={filter} callBack={() => addFilterTaskHandler(todoListId, 'All')}/>
+                <Button name={'Active'} filter={filter} callBack={() => addFilterTaskHandler(todoListId, 'Active')}/>
+                <Button name={'Completed'} filter={filter}
+                        callBack={() => addFilterTaskHandler(todoListId, 'Completed')}/>
             </div>
         </div>
     )

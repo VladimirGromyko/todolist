@@ -2,13 +2,14 @@ import React, {ChangeEvent, KeyboardEvent} from 'react';
 import s from './../TodoList.module.css'
 
 type InputPropsType = {
+    todoListId: string
     newTitle: string
     setNewTitle: (newTitle: string) => void
-    addTask: (title: string) => void
+    addTask: (todoListId: string, title: string) => void
     setError: (error: string | boolean) => void
     error: string | boolean
 }
-export const Input = ({newTitle, setNewTitle, addTask, setError, error, ...props}: InputPropsType) => {
+export const Input = ({todoListId, newTitle, setNewTitle, addTask, setError, error, ...props}: InputPropsType) => {
 
     const onChangeTaskHandler = (e: ChangeEvent<HTMLInputElement>) => {
         setNewTitle(e.currentTarget.value)
@@ -25,7 +26,7 @@ export const Input = ({newTitle, setNewTitle, addTask, setError, error, ...props
         // if (e.ctrlKey) {
         if (e.key === 'Enter') {
             if (newTitle.trim().length < 15) {
-                addTask(newTitle)
+                addTask(todoListId, newTitle)
                 setNewTitle('')
                 setError('Title is required')
             }
