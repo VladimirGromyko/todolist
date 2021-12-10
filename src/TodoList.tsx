@@ -3,6 +3,8 @@ import {FilterType, TaskType} from "./App";
 import {Button} from "./components/Button";
 import {Input} from "./components/Input";
 import s from "./TodoList.module.css"
+import {AddItemForm} from "./components/AddItemForm";
+import {EditableSpan} from "./components/EditableSpan";
 
 
 type TodoListPropsType = {
@@ -15,27 +17,15 @@ type TodoListPropsType = {
     changeStatus: (todoListId: string, id: string, status: boolean) => void
     filter: FilterType
     removeTodoList: (todoListId: string) => void
+    updateTask: (todoListId: string, id: string, title:string) => void
+    updateTodoList: (todoListId: string, title: string)=> void
 }
 export const TodoList = ({
                              todoListId, title, tasks, removeTask, addFilter,
-                             addTask, changeStatus, filter, removeTodoList, ...props
+                             addTask, changeStatus, filter, removeTodoList,
+                             updateTask, updateTodoList,...props
                          }: TodoListPropsType) => {
 
-    const [newTitle, setNewTitle] = useState('')
-    const [error, setError] = useState<string | boolean>('Title is required')
-
-    const addTaskHandler = () => {
-        let trimNewTitle = newTitle.trim()
-        if (trimNewTitle && trimNewTitle.length < 15) {
-            addTask(todoListId, trimNewTitle)
-            setNewTitle('')
-            setError('Title is required')
-        } else if (trimNewTitle.length > 15) {
-        } else {
-            setError('Title is required')
-            setNewTitle('')
-        }
-    }
     const addFilterTaskHandler = (todoListId: string, value: FilterType) => {
         addFilter(todoListId, value)
     }
@@ -48,24 +38,25 @@ export const TodoList = ({
     const removeTodoListHandler = (todoListId: string) => {
         removeTodoList(todoListId)
     }
+    const addTaskHandler = (title: string) => {
+        addTask(todoListId, title)
+    }
+    const updateTaskHandler=(id:string, taskTitle: string) => {
+        updateTask(todoListId, id, taskTitle)
+    }
+    const updateTodoListHandler=(TodoListTitle: string) => {
+        updateTodoList(todoListId, TodoListTitle)
+    }
 
     return (
         <div>
-            <h3>{title}
+            <h3>
+                <EditableSpan isDone={false}
+                              title={title}
+                              callBackName={(title)=> updateTodoListHandler(title)}/>
                 <button onClick={() => removeTodoListHandler(todoListId)}>X</button>
             </h3>
-            <div>
-                <Input
-                    todoListId={todoListId}
-                    newTitle={newTitle}
-                    setNewTitle={setNewTitle}
-                    addTask={addTask}
-                    setError={setError}
-                    error={error}/>
-                {/*<Button name={'+'} callBack={addTaskHandler}/>*/}
-                <button onClick={addTaskHandler}>+</button>
-                {error && <div className={s.errorMessage}>{error}</div>}
-            </div>
+            <AddItemForm addTask={addTaskHandler}/>
             <ul>
                 {tasks.map(el => {
                     return (
@@ -74,11 +65,12 @@ export const TodoList = ({
                                    checked={el.isDone}
                                    onChange={(e) => onChangeCheckboxHandler(el.id, e)}
                             />
-                            <span className={el.isDone ? s.isDone : ''}>
-                                {el.title}
-                            </span>
+                            <EditableSpan
+                                isDone={el.isDone}
+                                title={el.title}
+                                callBackName={(title)=> updateTaskHandler(el.id, title)}
+                            />
                             <button onClick={() => removeTaskHandler(todoListId, el.id)}>X</button>
-                            {/*  <Button name='X' callBack={() => removeTaskHandler(el.id)}/>*/}
                         </li>
                     )
                 })}

@@ -2,6 +2,7 @@ import React, {useState} from 'react'
 import './App.css';
 import {TodoList} from "./TodoList";
 import {v1} from "uuid";
+import {AddItemForm} from "./components/AddItemForm";
 
 
 export type TaskType = {
@@ -56,15 +57,25 @@ function App() {
         let taskAfterRemove = tasks[todoListId].filter(el => el.id !== id)
         setTask({...tasks, [todoListId]: taskAfterRemove})
     }
-
+    const addTodoList = (title: string) => {
+        let newTodoList = v1()
+        setTodoLists([{id: newTodoList, title, filter: "All"}, ...todoLists])
+        setTask({[newTodoList]: [], ...tasks,})
+    }
     const addTask = (todoListId: string, title: string) => {
         if (title.trim()) {
-            let newTask = [{id: v1(), title: title.trim(), isDone: false}, ...tasks[todoListId]]
+            let newTask = [{id: v1(), title: title, isDone: false}, ...tasks[todoListId]]
             setTask({...tasks, [todoListId]: newTask})
         }
     }
-// const [filter, setFilter] = useState<FilterType>('All')
-//
+    const updateTask = (todoListId: string, id: string, title: string) => {
+        let task = tasks[todoListId].map(m => m.id === id ? {...m, title} : m)
+        setTask({...tasks, [todoListId]: task})
+    }
+    const updateTodoList = (todoListId: string, title: string) =>{
+        setTodoLists(todoLists.map(m => m.id === todoListId ? {...m, title} : m))
+    }
+
     const addFilter = (todoListId: string, value: FilterType) => {
         setTodoLists(todoLists.map(m => m.id === todoListId ? {...m, filter: value} : m))
     }
@@ -76,14 +87,9 @@ function App() {
         setTodoLists(todoLists.filter(f => f.id !== todoListId))
         delete tasks[todoListId]
     }
-
-// if (filter === "Active") {
-//     newTask = tasks.filter(t_el => !t_el.isDone)
-// }
-// if (filter === "Completed") {
-//     newTask = tasks.filter(t_el => t_el.isDone)
-// }
-    return (<div className="App">
+    return (
+        <div className="App">
+            <AddItemForm addTask={addTodoList}/>
             {todoLists.map(m => {
                 let newTask = tasks[m.id]
                 if (m.filter === "Active") {
@@ -104,10 +110,11 @@ function App() {
                         changeStatus={changeStatus}
                         filter={m.filter}
                         removeTodoList={removeTodoList}
+                        updateTask={updateTask}
+                        updateTodoList={updateTodoList}
                     />
                 )
             })}
-
         </div>
     )
 }
