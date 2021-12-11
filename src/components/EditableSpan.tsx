@@ -1,7 +1,8 @@
 import React, {ChangeEvent, KeyboardEvent, useState} from 'react';
 import s from "../TodoList.module.css";
+import {TextField} from "@mui/material";
 
-type EditableSpanPropsType = {
+export type EditableSpanPropsType = {
     isDone: boolean
     title: string
     callBackName: (title: string) => void
@@ -35,13 +36,20 @@ export const EditableSpan = ({isDone, title, callBackName}: EditableSpanPropsTyp
     return (
 
         edit
-            ? <input value={newTitle}
-                     onBlur={editFalse}
-                     autoFocus
-                     onChange={onChangeHandler}
-                     onKeyPress={onKeyPressTaskHandler}
-
+            ?
+            <TextField
+                id="outlined-basic"
+                label="Outlined"
+                variant="outlined"
+                size="small"
+                value={newTitle}
+                onBlur={editFalse}
+                autoFocus
+                onChange={onChangeHandler}
+                onKeyPress={onKeyPressTaskHandler}
             />
+
+
             : <span className={isDone ? s.isDone : ''}
                     onDoubleClick={editTrue}>{title}
               </span>

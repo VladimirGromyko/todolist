@@ -34,6 +34,7 @@ export const Input = ({todoListId, newTitle, setNewTitle, addTask, setError, err
     }
 
     return (
+
         <input value={newTitle}
                className={error ? s.error : s.nonError}
                onChange={onChangeTaskHandler}
